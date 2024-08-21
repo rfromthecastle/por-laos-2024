@@ -55,6 +55,38 @@ calculate_percentage_within_range <- function(input_file, output_file) {
   print(paste("Percentage raster saved as", output_file))
 }
 
+# Function to calculate zonal statistics and save to CSV
+calculate_zonal_statistics <- function(raster_file, shapefile, output_csv) {
+  try({
+    polygons <- st_read(shapefile)
+    print(paste("Shapefile loaded successfully. Number of features:", nrow(polygons)))
+    
+    r <- raster(raster_file)
+    if (st_crs(polygons)$proj4string != projection(r)) {
+      polygons <- st_transform(polygons, crs = projection(r))
+      print("Shapefile reprojected to match the raster CRS.")
+    }
+    
+    # Perform exact extraction using the summary function
+    stats <- exact_extract(r, polygons, 'mean')
+    
+    required_columns <- c('code', 'HF_DHIS2_U', 'HMIS_NameD', 'HF_T_ABBR1', 'hfghprovin', 'hfghprovi1', 'hfghdistri', 'hfghdistr1')
+    if (!all(required_columns %in% colnames(polygons))) {
+      stop("One or more required columns are missing in the shapefile.")
+    }
+    
+    result <- cbind(st_drop_geometry(polygons)[required_columns], stats)
+    
+    write.csv(result, output_csv, row.names = FALSE)
+    print(paste("Zonal statistics saved to", output_csv))
+    
+    # View the CSV file in RStudio's viewer pane
+    data <- read.csv(output_csv)
+    View(data)
+    
+  }, silent = FALSE)
+}
+
 # Function to plot a shapefile in R
 plot_shapefile <- function(shapefile, title) {
   polygons <- st_read(shapefile)  # Read the shapefile
