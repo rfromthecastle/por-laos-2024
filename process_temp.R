@@ -18,36 +18,6 @@ library(sf)
 library(exactextractr)
 library(dplyr)
 
-# Function to download ERA5-Land data
-download_era5_land <- function(output_file) {
-  if (file.exists(output_file)) {
-    print(paste(output_file, "already exists. Skipping download."))
-    return()
-  }
-  
-  url <- "https://cds.climate.copernicus.eu/api/v2"
-  key <- Sys.getenv("COPERNICUS_API_KEY")
-  
-  request <- list(
-    variable = "2m_temperature",
-    year = "2023",
-    month = sprintf("%02d", 1:12),
-    day = sprintf("%02d", 1:31),
-    time = "12:00",
-    area = c(22.6742105539222258, 99.9050343141071551, 13.7353817230269417, 107.8147256667023299),
-    format = "netcdf"
-  )
-  
-  POST(
-    url,
-    authenticate(key, ""),
-    body = list(request = request, format = "netcdf"),
-    write_disk(output_file, overwrite = TRUE)
-  )
-  
-  print(paste("Data downloaded to", output_file))
-}
-
 # Function to display a specific band of the raster in RStudio with a custom title
 display_raster <- function(raster_file, band = 1, title) {
   r <- stack(raster_file)  # Use stack to handle multi-band raster
@@ -85,38 +55,6 @@ calculate_percentage_within_range <- function(input_file, output_file) {
   print(paste("Percentage raster saved as", output_file))
 }
 
-# Function to calculate zonal statistics and save to CSV
-calculate_zonal_statistics <- function(raster_file, shapefile, output_csv) {
-  try({
-    polygons <- st_read(shapefile)
-    print(paste("Shapefile loaded successfully. Number of features:", nrow(polygons)))
-    
-    r <- raster(raster_file)
-    if (st_crs(polygons)$proj4string != projection(r)) {
-      polygons <- st_transform(polygons, crs = projection(r))
-      print("Shapefile reprojected to match the raster CRS.")
-    }
-    
-    # Perform exact extraction using the summary function
-    stats <- exact_extract(r, polygons, 'mean')
-    
-    required_columns <- c('code', 'HF_DHIS2_U', 'HMIS_NameD', 'HF_T_ABBR1', 'hfghprovin', 'hfghprovi1', 'hfghdistri', 'hfghdistr1')
-    if (!all(required_columns %in% colnames(polygons))) {
-      stop("One or more required columns are missing in the shapefile.")
-    }
-    
-    result <- cbind(st_drop_geometry(polygons)[required_columns], stats)
-    
-    write.csv(result, output_csv, row.names = FALSE)
-    print(paste("Zonal statistics saved to", output_csv))
-    
-    # View the CSV file in RStudio's viewer pane
-    data <- read.csv(output_csv)
-    View(data)
-    
-  }, silent = FALSE)
-}
-
 # Function to plot a shapefile in R
 plot_shapefile <- function(shapefile, title) {
   polygons <- st_read(shapefile)  # Read the shapefile
@@ -130,9 +68,6 @@ converted_file <- "D:/ERA5/laos_temperature_2023_celsius.nc"
 percentage_raster_file <- "D:/ERA5/temperature_percentage_20_30.tif"
 shapefile <- "D:/ERA5/hfca_only_public_072024.shp"
 output_csv <- "D:/ERA5/temp_zonal_statistics.csv"
-
-# Run the functions
-download_era5_land(download_file)
 
 # Display the Kelvin raster (first band)
 display_raster(download_file, band = 1, title = "ERA5 Temperature (Kelvin) - Day 1, 2023")
