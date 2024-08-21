@@ -2,7 +2,7 @@
 setwd("D:/Malaria/por-laos-2024")
 
 # Load necessary libraries
-required_packages <- c("httr", "ncdf4", "raster", "sf", "exactextractr", "dplyr")
+required_packages <- c("exactextractr", "dplyr")
 installed_packages <- rownames(installed.packages())
 
 for (pkg in required_packages) {
@@ -11,14 +11,9 @@ for (pkg in required_packages) {
   }
 }
 
-library(httr)
-library(ncdf4)
-library(raster)
-library(sf)
 library(exactextractr)
 library(dplyr)
 library(terra)
-library(ggplot2)
 
 # Function to display a specific band of the raster in RStudio with a custom title
 display_raster <- function(raster_file) {
