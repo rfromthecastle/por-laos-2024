@@ -32,53 +32,6 @@ plot_shapefile <- function(shapefile, title) {
   print(paste("Shapefile plotted with title:", title))
 }
 
-# Function to resample and align rasters
-resample_rasters <- function(raster1, raster2) {
-  # Resample raster2 to match the resolution and extent of raster1
-  resampled_raster2 <- resample(raster2, raster1, method = "bilinear")
-  
-  # Ensure the extents match
-  extent_resampled_raster2 <- crop(resampled_raster2, extent(raster1))
-  
-  return(extent_resampled_raster2)
-}
-
-# Function to calculate relative humidity
-calculate_relative_humidity <- function(temp_file, dewpoint_file, output_file) {
-  if (file.exists(output_file)) {
-    print(paste(output_file, "already exists. Skipping calculation."))
-    return()
-  }
-  
-  # Load temperature and dewpoint temperature data
-  temp_raster <- brick(temp_file)
-  dewpoint_raster <- brick(dewpoint_file)
-  
-  # Resample and align the rasters
-  dewpoint_raster_aligned <- resample_rasters(temp_raster, dewpoint_raster)
-  
-  # Constants for the calculation
-  a <- 17.27
-  b <- 237.7
-  
-  # Convert from Kelvin to Celsius
-  temp_celsius <- calc(temp_raster, fun = function(x) x - 273.15)
-  dewpoint_celsius <- calc(dewpoint_raster_aligned, fun = function(x) x - 273.15)
-  
-  # Calculate saturation vapor pressure
-  saturation_vapor_pressure <- calc(temp_celsius, fun = function(x) 6.11 * exp(a * x / (b + x)))
-  
-  # Calculate actual vapor pressure
-  actual_vapor_pressure <- calc(dewpoint_celsius, fun = function(x) 6.11 * exp(a * x / (b + x)))
-  
-  # Calculate relative humidity
-  relative_humidity <- overlay(actual_vapor_pressure, saturation_vapor_pressure, fun = function(avp, svp) (avp / svp) * 100)
-  
-  # Save the relative humidity raster
-  writeRaster(relative_humidity, output_file, format = "GTiff", overwrite = TRUE)
-  print(paste("Relative Humidity raster saved as", output_file))
-}
-
 # Function to calculate the percentage of days with RH between 70% and 100%
 calculate_percentage_rh_range <- function(rh_file, output_file) {
   if (file.exists(output_file)) {
@@ -131,23 +84,18 @@ calculate_zonal_statistics_percentage <- function(raster_file, shapefile, output
 }
 
 # Set file paths
-temperature_file <- "D:/ERA5/laos_temperature_2023.nc"
-dewpoint_file <- "D:/ERA5/laos_dewpoint_temp_2023.nc"
-relative_humidity_file <- "D:/ERA5/laos_relative_humidity_2023.tif"
+rh_file <- "D:/ERA5/laos_relhum_2023.nc"
 percentage_rh_file <- "D:/ERA5/percentage_rh_70_100_2023.tif"
 shapefile <- "D:/ERA5/hfca_only_public_072024.shp"
 output_csv <- "D:/ERA5/percentage_rh_zonal_statistics.csv"
 
-# Step 1: Calculate Relative Humidity and save as a raster
-calculate_relative_humidity(temperature_file, dewpoint_file, relative_humidity_file)
-
-# Step 2: Calculate the percentage of days with RH between 70% and 100%
-calculate_percentage_rh_range(relative_humidity_file, percentage_rh_file)
+# Step 1: Calculate the percentage of days with RH between 70% and 100%
+calculate_percentage_rh_range(rh_file, percentage_rh_file)
 
 # Display the Percentage RH raster
 display_raster(percentage_rh_file, band = 1, title = "Percentage of Days with RH 70%-100%, 2023")
 
-# Step 3: Calculate zonal statistics based on the percentage raster
+# Step 2: Calculate zonal statistics based on the percentage raster
 calculate_zonal_statistics_percentage(percentage_rh_file, shapefile, output_csv)
 
 print("Process completed.")
