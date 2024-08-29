@@ -9,7 +9,7 @@ All ERA5 datasets are downloaded from the Copernicus Climate Data Service using 
 
 The R scripts handle the processing of each variable.
 
-# Authors
+## Authors
 Scripts developed by:
 - ChatGPT
 - Rica Zamora Duchateau (Clinton Health Access Initiative)
