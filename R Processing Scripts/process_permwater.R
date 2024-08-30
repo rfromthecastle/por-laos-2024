@@ -67,8 +67,8 @@ plot_shapefile <- function(shapefile, title) {
 
 # Set file paths
 land_cover_file <- "D:/ERA5/land_cover_2023_Laos.tif"
-shapefile <- "D:/ERA5/hfca_only_public_072024.shp"
-output_csv <- "D:/ERA5/forest_cover_percentage.csv"
+shapefile <- "D:/ERA5/HFML for POR Voronoi.shp"
+output_csv <- "D:/ERA5/permanent_water_cover_percentage.csv"
 
 # Display Land Cover Raster
 display_raster(land_cover_file)
