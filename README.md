@@ -8,3 +8,11 @@ All ERA5 datasets are downloaded from the Copernicus Climate Data Service using 
 - ESA WorldCover 2021 in GeoTIFF format (download from website and stitch together in QGIS)
 
 The R scripts handle the processing of each variable.
+
+## Authors
+Scripts developed by:
+- ChatGPT
+- Rica Zamora Duchateau (Clinton Health Access Initiative)
+- Valérian Turbé (Clinton Health Access Initiative)
+- Jessica Floyd (Clinton Health Access Initiative)
+- Hannah Brindle (Clinton Health Access Initiative)
