@@ -1,7 +1,7 @@
 # First generate a .cdsapirc file with the contents:
 #
-# url: https://cds.climate.copernicus.eu/api/v2
-# key: <your-uid>:<your-api-key>
+# url: https://cds-beta.climate.copernicus.eu/api
+# key: <your-personal-access-token>
 #
 # and store in C:\Users\<YourUsername>
 #
@@ -39,7 +39,7 @@ def download_era5_land(output_file):
         'reanalysis-era5-land',
         {
             'variable': 'total_precipitation',
-            'year': '2023',
+            'year': ['2021','2022','2023'],
             'month': [
                 '01', '02', '03', '04', '05', '06',
                 '07', '08', '09', '10', '11', '12',
@@ -53,15 +53,16 @@ def download_era5_land(output_file):
                 '31',
             ],
             'time': '12:00',
-            'area': [22.6742105539222258, 99.9050343141071551, 13.7353817230269417, 107.8147256667023299],
-            'format': 'netcdf',
+            'data_format': 'netcdf',
+            'download_format': 'unarchived',
+            'area': [22.6742105539222258, 99.9050343141071551, 13.7353817230269417, 107.8147256667023299]
         },
         output_file
     )
     print(f"Data downloaded to {output_file}")
 
 # Set file paths
-download_file = "D:/ERA5/laos_rainfall_2023.nc"
+download_file = "D:/ERA5/laos_rainfall_2021_2023.nc"
 
 # Run the functions
 download_era5_land(download_file)
