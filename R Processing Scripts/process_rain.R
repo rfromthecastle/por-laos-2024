@@ -26,9 +26,9 @@ display_raster <- function(raster_file, band = 1, title) {
 }
 
 # Set file path
-download_file <- "D:/ERA5/laos_rainfall_2023.nc"
+download_file <- "D:/ERA5/laos_rainfall_2021_2023.nc"
 polygons <- "D:/ERA5/hfca_only_public_072024.shp"
-output_csv <- "D:/ERA5/median_weekly_rainfall_2023.csv"
+output_csv <- "D:/ERA5/median_weekly_rainfall_2021_2023.csv"
 
 # Load the raster
 r <- stack(download_file)
@@ -37,10 +37,10 @@ r <- stack(download_file)
 r_mm <- r * 1000
 
 # Display the converted raster (band 182)
-display_raster(r_mm, band = 182, title = "ERA5 Rainfall (mm) - Day 182, 2023")
+display_raster(r_mm, band = 182, title = "ERA5 Rainfall (mm) - Day 182, 2021")
 
-# Number of weeks in 2023
-num_weeks <- 52
+# Number of weeks in 2021-2023
+num_weeks <- 52 * 3
 
 # Initialize a list to store weekly rasters
 weekly_rasters <- list()
@@ -57,7 +57,7 @@ for (week in 1:num_weeks) {
 median_raster <- calc(stack(weekly_rasters), fun = median, na.rm = TRUE)
 
 # Save the median raster as a single-band raster
-median_raster_file <- "D:/ERA5/laos_rainfall_median_2023.tif"
+median_raster_file <- "D:/ERA5/laos_rainfall_median_2021_2023.tif"
 writeRaster(median_raster, filename = median_raster_file, format = "GTiff", overwrite = TRUE)
 
 # Display the median raster
