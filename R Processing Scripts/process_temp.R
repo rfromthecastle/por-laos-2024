@@ -95,24 +95,24 @@ plot_shapefile <- function(shapefile, title) {
 }
 
 # Set file paths
-download_file <- "D:/ERA5/laos_temperature_2023.nc"
-converted_file <- "D:/ERA5/laos_temperature_2023_celsius.nc"
-percentage_raster_file <- "D:/ERA5/temperature_percentage_20_30.tif"
+download_file <- "D:/ERA5/laos_temperature_2021_2023.nc"
+converted_file <- "D:/ERA5/laos_temperature_2021_2023_celsius.nc"
+percentage_raster_file <- "D:/ERA5/temperature_percentage_20_30_2021_2023.tif"
 shapefile <- "D:/ERA5/hfca_only_public_072024.shp"
 output_csv <- "D:/ERA5/temp_zonal_statistics.csv"
 
 # Display the Kelvin raster (first band)
-display_raster(download_file, band = 1, title = "ERA5 Temperature (Kelvin) - Day 1, 2023")
+display_raster(download_file, band = 1, title = "ERA5 Temperature (Kelvin) - Day 1, 2021")
 
 convert_kelvin_to_celsius(download_file, converted_file)
 
 # Display the Celsius raster (first band)
-display_raster(converted_file, band = 1, title = "ERA5 Temperature (Celsius) - Day 1, 2023")
+display_raster(converted_file, band = 1, title = "ERA5 Temperature (Celsius) - Day 1, 2021")
 
 calculate_percentage_within_range(converted_file, percentage_raster_file)
 
 # Display the percentage raster
-display_raster(percentage_raster_file, band = 1, title = "% of days between 20°C - 30°C, 2023")
+display_raster(percentage_raster_file, band = 1, title = "% of days between 20°C - 30°C, 2021-2023")
 
 # Plot the shapefile
 plot_shapefile(shapefile, "Health Facility Catchment Areas")
