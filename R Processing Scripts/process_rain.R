@@ -61,7 +61,7 @@ median_raster_file <- "D:/ERA5/laos_rainfall_median_2021_2023.tif"
 writeRaster(median_raster, filename = median_raster_file, format = "GTiff", overwrite = TRUE)
 
 # Display the median raster
-display_raster(median_raster_file, band = 1, title = "Median Weekly Rainfall (mm) - 2023")
+display_raster(median_raster_file, band = 1, title = "Median Weekly Rainfall (mm) - 2021-2023")
 
 # Function to calculate zonal statistics and save to CSV
 calculate_zonal_statistics <- function(raster_file, shapefile, output_csv) {
