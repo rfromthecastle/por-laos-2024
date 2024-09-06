@@ -1,7 +1,7 @@
 # First generate a .cdsapirc file with the contents:
 #
-# url: https://cds.climate.copernicus.eu/api/v2
-# key: <your-uid>:<your-api-key>
+# url: https://cds-beta.climate.copernicus.eu/api
+# key: <your-personal-access-token>
 #
 # and store in C:\Users\<YourUsername>
 #
@@ -38,25 +38,16 @@ def download_era5_land(output_file):
     c.retrieve(
         'reanalysis-era5-pressure-levels',
         {
-            'product_type': 'reanalysis',
-            'variable': 'relative_humidity',
-            'pressure_level': '1000',
-            'year': '2023',
-            'month': [
-                '01', '02', '03', '04', '05', '06',
-                '07', '08', '09', '10', '11', '12',
-            ],
-            'day': [
-                '01', '02', '03', '04', '05', '06',
-                '07', '08', '09', '10', '11', '12',
-                '13', '14', '15', '16', '17', '18',
-                '19', '20', '21', '22', '23', '24',
-                '25', '26', '27', '28', '29', '30',
-                '31',
-            ],
-            'time': '12:00',
-            'area': [22.6742105539222258, 99.9050343141071551, 13.7353817230269417, 107.8147256667023299],
-            'format': 'netcdf',
+            'product_type': ['reanalysis'],
+            'variable': ['relative_humidity'],
+            'year': ['2021', '2022', '2023'],
+            'month': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+            'day': ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
+            'time': ['12:00'],
+            'pressure_level': ['1000'],
+            'data_format': 'netcdf',
+            'download_format': 'unarchived',
+            'area': [22.674210553922226, 99.90503431410716, 13.735381723026942, 107.81472566670233]
         },
         output_file
     )
