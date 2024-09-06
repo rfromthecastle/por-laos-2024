@@ -84,7 +84,7 @@ calculate_zonal_statistics_percentage <- function(raster_file, shapefile, output
 }
 
 # Set file paths
-rh_file <- "D:/ERA5/laos_relhum_2023.nc"
+rh_file <- "D:/ERA5/laos_relhum_2021_2023.nc"
 percentage_rh_file <- "D:/ERA5/percentage_rh_70_100_2023.tif"
 shapefile <- "D:/ERA5/hfca_only_public_072024.shp"
 output_csv <- "D:/ERA5/percentage_rh_zonal_statistics.csv"
