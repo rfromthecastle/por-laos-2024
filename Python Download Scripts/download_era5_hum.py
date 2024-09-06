@@ -54,7 +54,7 @@ def download_era5_land(output_file):
     print(f"Data downloaded to {output_file}")
 
 # Set file paths
-download_file = "D:/ERA5/laos_relhum_2023.nc"
+download_file = "D:/ERA5/laos_relhum_2021_2023.nc"
 
 # Run the functions
 download_era5_land(download_file)
