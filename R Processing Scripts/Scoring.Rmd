@@ -1,0 +1,694 @@
+---
+title: "Scoring"
+output: html_document
+date: "2024-08-30"
+editor_options: 
+  chunk_output_type: console
+---
+
+# Temperature
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(sf)
+library(readxl)
+
+temp<-read.csv("temp_zonal_statistics.csv")
+
+temp<-temp %>%
+  mutate(temp_score = case_when(stats>=80 ~ 4, 
+                                stats>=50 & stats <80 ~2, 
+                                stats<50 ~1
+                                ))
+
+write.csv(temp, "temp_zonal_statistics.csv")
+
+voronoi<-st_read("HFML for POR Voronoi.shp")
+
+temp_join<- left_join(temp,voronoi, by="code")
+
+temp_join$temp_score2<-as.character(temp_join$temp_score)
+
+map<-ggplot(temp_join) +
+  geom_sf(aes (fill=temp_score2, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_manual(values=c("1"="lightyellow", "2"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Temperature")
+
+map
+
+ggsave("Temperature_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Humidity
+
+```{r}
+hum<-read.csv("percentage_rh_zonal_statistics.csv")
+
+hum<-hum %>%
+  mutate(hum_score = case_when(stats>=80 ~ 4, 
+                                stats>=50 & stats <80 ~2, 
+                                stats<50 ~1
+                                ))
+
+write.csv(temp, "percentage_rh_zonal_statistics.csv")
+
+
+hum_join<- merge(hum,voronoi, by="code")
+
+hum_join$hum_score2<-as.character(hum_join$hum_score)
+
+map<-ggplot(hum_join) +
+  geom_sf(aes (fill=hum_score2, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_manual(values=c("1"="lightyellow", "2"="plum", "4"="deeppink4")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Humidity")
+
+map
+
+
+
+ggsave("Humidity_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Rainfall
+
+```{r}
+rainfall<-read.csv("median_weekly_rainfall_2023.csv")
+
+
+rainfall<-rainfall %>%
+  mutate(rainfall_score = case_when(stats>=16 ~ 4, 
+                                stats>=8 & stats <16 ~2, 
+                                stats<8 ~1
+                                ))
+
+write.csv(hum, "percentage_rh_zonal_statistics.csv")
+
+
+rainfall_join<- merge(rainfall,voronoi, by="code")
+
+rainfall_join$rainfall_score2<-as.character(rainfall_join$rainfall_score)
+
+map<-ggplot(rainfall_join) +
+  geom_sf(aes (fill=rainfall_score2, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_manual(values=c("1"="lightblue", "2"="steelblue2", "4"="darkblue")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Rainfall")
+
+map
+
+ggsave("Rainfall_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Climate
+
+```{r}
+clim<-left_join(temp, hum, by="code")
+clim<-merge(clim, rainfall, by="code")
+
+clim$clim_score<-clim$temp_score + clim$hum_score + clim$rainfall_score
+
+clim_join<- left_join(clim,voronoi, by="code")
+
+variables<-c("code", "clim_score", "geometry")
+
+clim_join<-clim_join[variables]
+
+map<-ggplot(clim_join) +
+  geom_sf(aes (fill=clim_score, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient(low="lightyellow", high="darkred") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Climatic variables")
+
+map
+
+ggsave("Climatic_Map.jpg", width=150, height=250, unit="mm")
+
+```
+
+# Forest cover
+
+```{r}
+land<-read.csv("forest_cover_percentage.csv")
+
+
+land<-land %>%
+  mutate(land_score = case_when(forest_cover_percentage>=75 ~ 4, 
+                                forest_cover_percentage>=40 & forest_cover_percentage <75 ~2, 
+                                forest_cover_percentage<40 ~1
+                                ))
+
+land_join<- merge(land,voronoi, by="code")
+
+
+land_join$land_score2<-as.character(land_join$land_score)
+
+map<-ggplot(land_join) +
+  geom_sf(aes (fill=land_score2, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_manual(values=c("1"="darkseagreen1", "2"="darkseagreen3", "4"="darkgreen")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Forest cover")
+
+map
+
+
+ggsave("Forest_Map.jpg", width=150, height=250, unit="mm")
+
+```
+
+# Altitude
+
+```{r}
+altitude<-read.csv("alt_zonal_statistics.csv")
+
+altitude<-altitude %>%
+  mutate(alt_score = case_when(stats<500 ~ 4, 
+                                stats>=500 & stats <2000 ~2, 
+                                stats>=2000 ~1
+                                ))
+
+altitude_join<- merge(altitude,voronoi, by="code")
+
+
+altitude_join$alt_score2<-as.character(altitude_join$alt_score)
+
+map<-ggplot(altitude_join) +
+  geom_sf(aes (fill=alt_score2, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_manual(values=c("1"="tan4", "2"="khaki3", "4"="darkseagreen3")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Altitude")
+
+map
+
+ggsave("Altitude_Map.jpg", width=150, height=250, unit="mm")
+```
+
+
+
+# Permanent water coverage
+
+```{r}
+water<-read.csv("permanent_water_cover_percentage.csv")
+
+water<-water %>%
+  mutate(water_score = case_when(permanent_water_cover_percentage>=10 ~ 4, 
+                                permanent_water_cover_percentage>=1 & permanent_water_cover_percentage <10 ~2, 
+                                permanent_water_cover_percentage<1 ~1
+                                ))
+
+
+water_join<- merge(water,voronoi, by="code")
+
+
+water_join$water_score2<-as.character(water_join$water_score)
+
+map<-ggplot(water_join) +
+  geom_sf(aes (fill=water_score2, geometry=geometry)) +
+  theme_bw() + 
+ scale_fill_manual(values=c("1"="lightblue", "2"="steelblue2", "4"="darkblue")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Permanent water bodies")
+
+map
+
+ggsave("Permanent_water_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Seasonal water bodies
+
+```{r}
+water_s<-read.csv("2023_SWB_data.csv")
+
+water_s$geometry<-NULL
+
+water_s<-water_s %>%
+  mutate(water_s_score = case_when(swb_coverage>=10 ~ 4, 
+                                swb_coverage>=1 & swb_coverage <10 ~2, 
+                                swb_coverage<1 ~1
+                                ))
+
+
+water_s_join<- merge(water_s,voronoi, by="code")
+
+
+water_s_join$water_s_score2<-as.character(water_s_join$water_s_score)
+
+map<-ggplot(water_s_join) +
+  geom_sf(aes (fill=water_s_score2, geometry=geometry)) +
+  theme_bw() + 
+ scale_fill_manual(values=c("1"="lightblue", "2"="steelblue2", "4"="darkblue")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Seasonal water bodies")
+
+map
+
+ggsave("Seasonal_water_Map.jpg", width=150, height=250, unit="mm")
+
+```
+
+
+
+```{r}
+environmental<-merge(clim, land, by="code")
+environmental<-merge(environmental, water, by="code")
+environmental<-merge(environmental, water_s, by="code")
+environmental<-merge(environmental, altitude, by="code")
+
+environmental$environmental_score<-environmental$clim_score + environmental$water_score + environmental$water_s_score + environmental$land_score + environmental$alt_score
+
+environmental_join<- merge(environmental,voronoi, by="code")
+
+variables<-c("code", "environmental_score", "geometry")
+
+environmental_join<-environmental_join[variables]
+
+map<-ggplot(environmental_join) +
+  geom_sf(aes (fill=environmental_score, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient(low="lightyellow", high="darkred") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Environmental variables")
+
+map
+
+ggsave("Environmental_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Distances 
+
+```{r}
+distance<-read.csv("distance_to_border_air_rail.csv")
+
+distance_join<- merge(distance,voronoi, by="code")
+
+
+distance_join$dist_to_air_score2<-as.character(distance_join$dist_to_air_score)
+
+map<-ggplot(distance_join) +
+  geom_sf(aes (fill=dist_to_air_score2, geometry=geometry)) +
+  theme_bw() + 
+ scale_fill_manual(values=c("1"="lightyellow", "2"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Distance to airport")
+
+map
+
+ggsave("Distance_Airport_Map.jpg", width=150, height=250, unit="mm")
+
+
+
+distance_join$dist_to_rail_score2<-as.character(distance_join$dist_to_rail_score)
+
+map<-ggplot(distance_join) +
+  geom_sf(aes (fill=dist_to_rail_score2, geometry=geometry)) +
+  theme_bw() + 
+ scale_fill_manual(values=c("1"="lightyellow", "2"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Distance to railway station")
+
+map
+
+ggsave("Distance_Rail_Map.jpg", width=150, height=250, unit="mm")
+
+
+distance_join$dist_to_cam_score2<-as.character(distance_join$dist_to_cam_score)
+
+map<-ggplot(distance_join) +
+  geom_sf(aes (fill=dist_to_cam_score2, geometry=geometry)) +
+  theme_bw() + 
+ scale_fill_manual(values=c("1"="lightyellow", "2"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Distance to Cambodian border (Stung Treng and Ratanakiri")
+
+map
+
+ggsave("Distance_Cambodia_Map.jpg", width=150, height=250, unit="mm")
+
+```
+
+# Environmental and distance matrix
+
+```{r}
+environmental_dist<-merge(environmental, distance)
+
+environmental_dist$environmental_dist_score<-environmental_dist$environmental_score + environmental_dist$dist_to_air_score + environmental_dist$dist_to_rail_score + environmental_dist$dist_to_cam_score
+
+
+environmental_dist_join<- merge(environmental_dist,voronoi, by="code")
+
+variables<-c("code", "environmental_dist_score", "geometry")
+
+environmental_dist_join<-environmental_dist_join[variables]
+
+map<-ggplot(environmental_dist_join) +
+  geom_sf(aes (fill=environmental_dist_score, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient(low="lightyellow", high="darkred") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Environmental and distance variables")
+
+map
+
+ggsave("Environmental_Distance_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Cases (2023)
+
+```{r}
+cases<-read.csv("HFCA_MAP_2024.csv")
+
+
+# Cases numbers
+
+codes<-c("code", "HF_DHIS2_U")
+
+codes2<-temp[codes]
+
+cases$HF_DHIS2_U<-cases$HF_ID
+
+cases_group<-group_by(cases, HF_DHIS2_U) %>%
+  summarise(cases=sum(Cases_2023))
+
+cases_join<-merge(cases_group, codes2, by="HF_DHIS2_U", all=TRUE)
+
+cases_join<- merge(cases_join,voronoi, by="code")
+
+
+variables<-c("code", "cases", "geometry")
+
+cases_join<-cases_join[variables]
+
+map<-ggplot(cases_join) +
+  geom_sf(aes (fill=cases, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient(low="yellow", high="darkred", na.value="white") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Number of cases (2023)", title="Cases")
+
+map
+
+ggsave("Number_Cases_Map.jpg", width=150, height=250, unit="mm")
+
+# Incidence
+
+cases_group2<-group_by(cases, HF_DHIS2_U, Population_2023_final) %>%
+  summarise(cases=sum(Cases_2023))
+
+cases_group2$incidence<-cases_group2$cases/cases_group2$Population_2023_final*100000
+
+cases_group2[is.na(cases_group2)] <- 0
+
+cases_group2<-cases_group2 %>%
+  mutate(case_score = case_when(incidence>=500 ~ 4, 
+                                incidence>=5 & incidence <500 ~2, 
+                                incidence<5 ~1
+                                ))
+
+
+
+cases2_join<- merge(cases_group2,voronoi, by="HF_DHIS2_U", all=TRUE)
+
+cases2_anti_join<-anti_join(cases_group2, voronoi, by="HF_DHIS2_U")
+
+variables<-c("code", "case_score", "geometry")
+
+cases2_join<-cases2_join[variables]
+
+cases2_join[is.na(cases2_join)] <- 1
+
+cases2_join$case_score2<-as.character(cases2_join$case_score)
+
+map<-ggplot(cases2_join) +
+  geom_sf(aes (fill=case_score2, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Cases")
+
+map
+
+
+ggsave("Cases_Score_Map.jpg", width=150, height=250, unit="mm")
+
+```
+
+# Cases 2021-2023
+
+```{r}
+cases<-read.csv("HFCA_MAP_2024.csv")
+
+codes<-c("code", "HF_DHIS2_U")
+
+codes2<-temp[codes]
+
+cases$HF_DHIS2_U<-cases$HF_ID
+
+cases_group<-group_by(cases, HF_DHIS2_U) %>%
+  summarise(cases=sum(Total_Cases_2021_2023))
+
+cases_join<-merge(cases_group, codes2, by="HF_DHIS2_U")
+
+cases_anti_join<-anti_join(cases_group, codes2, by="HF_DHIS2_U")
+
+cases_join<- merge(cases_group,voronoi, by="HF_DHIS2_U")
+cases_anti_join<-anti_join(cases_group, voronoi, by="HF_DHIS2_U")
+
+variables<-c("code", "cases", "geometry")
+
+cases_join<-cases_join[variables]
+
+map<-ggplot(cases_join) +
+  geom_sf(aes (fill=cases, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient2(low="lightyellow",high="darkred", na.value="white") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Number of cases (2023)", title="Cases")
+
+map
+
+ggsave("Number_Cases_2021_2023_Map.jpg", width=150, height=250, unit="mm")
+
+
+cases_group2<-group_by(cases, HF_DHIS2_U, Population_2023_final) %>%
+  summarise(cases=sum(Total_Cases_2021_2023))
+
+
+
+cases_group2$incidence<-cases_group2$cases/cases_group2$Population_2023_final*100000
+
+cases_group2$mean_incidence<-cases_group2$incidence/3
+
+cases_group2[is.na(cases_group2)] <- 0
+
+cases_group2<-cases_group2 %>%
+  mutate(case_score = case_when(mean_incidence>=500 ~ 4, 
+                                mean_incidence>=5 & mean_incidence <500 ~2, 
+                                mean_incidence<5 ~1
+                                ))
+
+
+cases2_join<- merge(cases_group2, voronoi,by="HF_DHIS2_U", all=TRUE)
+
+
+variables<-c("code", "case_score", "geometry")
+
+cases2_join<-cases2_join[variables]
+
+
+
+cases2_join$case_score2<-as.character(cases2_join$case_score)
+
+map<-ggplot(cases2_join) +
+  geom_sf(aes (fill=case_score2, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="Cases")
+
+map
+
+
+ggsave("Cases_2021_2023_Score_Map.jpg", width=150, height=250, unit="mm")
+```
+
+
+# Final matrix
+
+```{r}
+total<-merge(environmental_dist, cases_group2)
+
+total$total_score<-total$environmental_dist_score + total$case_score
+
+total_join<- merge(total,voronoi, by="code")
+
+variables<-c("code", "total_score", "geometry")
+
+total_join<-total_join[variables]
+
+map<-ggplot(total_join) +
+  geom_sf(aes (fill=total_score, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient(low="lightyellow", high="darkred") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="All variables")
+
+map
+
+ggsave("Total_Map.jpg", width=150, height=250, unit="mm")
+```
+
+# Total minus distances to airports and stations
+
+```{r}
+total_dist<-merge(environmental_dist, cases_group2)
+
+total_dist$total_dist_score<-total_dist$environmental_score + total_dist$dist_to_cam_score + total$case_score
+
+total_dist_join<- merge(total_dist,voronoi, by="code")
+
+variables<-c("code", "total_dist_score", "geometry")
+
+total_dist_join<-total_dist_join[variables]
+
+map<-ggplot(total_dist_join) +
+  geom_sf(aes (fill=total_dist_score, geometry=geometry)) +
+  theme_bw() + 
+  scale_fill_gradient(low="lightyellow", high="darkred") +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Risk score", title="All variables minus distances to airports and stations")
+
+map
+
+ggsave("Total_Dist_Map.jpg", width=150, height=250, unit="mm")
+```
+
+
+
+# Assigning strata
+
+```{r}
+clim_join<-clim_join %>%
+  mutate(clim_strata = case_when(clim_score>=10 ~ 4, 
+                                clim_score>=7 & clim_score <10 ~3, 
+                                 clim_score>=4 & clim_score <7 ~2, 
+                                clim_score<4 ~1
+                                ))
+
+
+clim_join$clim_strata<-as.character(clim_join$clim_strata)
+
+map<-ggplot(clim_join) +
+  geom_sf(aes (fill=clim_strata, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="yellow", "3"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Strata", title="Climatic variables")
+
+map
+
+ggsave("Climate_Strata.jpg", width=150, height=250, unit="mm")
+```
+
+
+```{r}
+environmental_join<-environmental_join %>%
+  mutate(environmental_strata = case_when(environmental_score>=19 ~ 4, 
+                                environmental_score>=13 & environmental_score <19 ~3, 
+                                 environmental_score>=7 & environmental_score <13 ~2, 
+                                environmental_score<7 ~1
+                                ))
+
+
+environmental_join$environmental_strata<-as.character(environmental_join$environmental_strata)
+
+map<-ggplot(environmental_join) +
+  geom_sf(aes (fill=environmental_strata, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="yellow", "3"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Strata", title="Environmental variables")
+
+map
+
+ggsave("Environmental_Strata.jpg", width=150, height=250, unit="mm")
+```
+
+
+```{r}
+environmental_dist_join<-environmental_dist_join %>%
+  mutate(environmental_dist_strata = case_when(environmental_dist_score>=23 ~ 4,
+                                environmental_dist_score>=16 & environmental_dist_score <23 ~3, 
+                                 environmental_dist_score>=9 & environmental_dist_score <16 ~2, 
+                                environmental_dist_score<9 ~1
+                                ))
+
+
+environmental_dist_join$environmental_dist_strata<-as.character(environmental_dist_join$environmental_dist_strata)
+
+map<-ggplot(environmental_dist_join) +
+  geom_sf(aes (fill=environmental_dist_strata, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="yellow", "3"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Strata", title="Environmental and distance variables")
+
+map
+
+ggsave("Environmental_Dist_Strata.jpg", width=150, height=250, unit="mm")
+```
+
+
+```{r}
+total_join<-total_join %>%
+  mutate(total_strata = case_when(total_score>=24 ~ 4, 
+                                total_score>=17 & total_score <24 ~3, 
+                                 total_score>=9 & total_score <17 ~2, 
+                                total_score<9 ~1
+                                ))
+
+
+total_join$total_strata<-as.character(total_join$total_strata)
+
+map<-ggplot(total_join) +
+  geom_sf(aes (fill=total_strata, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="yellow", "3"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Strata", title="Total Variables")
+
+map
+
+ggsave("Total_Strata.jpg", width=150, height=250, unit="mm")
+```
+
+
+```{r}
+total_dist_join<-total_dist_join %>%
+  mutate(total_dist_strata = case_when(total_dist_score>=22 ~ 4, 
+                                total_dist_score>=15 & total_dist_score <22 ~3, 
+                                 total_dist_score>=8 & total_dist_score <15 ~2, 
+                                total_dist_score<8 ~1
+                                ))
+
+
+total_dist_join$total_dist_strata<-as.character(total_dist_join$total_dist_strata)
+
+map<-ggplot(total_dist_join) +
+  geom_sf(aes (fill=total_dist_strata, geometry=geometry)) +
+  theme_bw() + 
+scale_fill_manual(values=c("1"="lightyellow", "2"="yellow", "3"="orange", "4"="darkred")) +
+  theme (panel.background = element_blank(), panel.border = element_blank (), panel.grid.major=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), legend.position="bottom") +
+  labs(fill="Strata", title="All variables minus distances to airports and stations")
+
+map
+
+ggsave("Total_Dist_Strata.jpg", width=150, height=250, unit="mm")
+```
+
