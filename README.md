@@ -11,9 +11,9 @@ The R scripts handle the processing of each variable.
 ## Authors
 Scripts developed by:
 - ChatGPT
-- Rica Zamora Duchateau (Clinton Health Access Initiative)
-- Valérian Turbé (Clinton Health Access Initiative)
-- Jessica Floyd (Clinton Health Access Initiative)
-- Hannah Brindle (Clinton Health Access Initiative)
-- Lorenzo Arena (Clinton Health Access Initiative)
-- Elijah Filip (Clinton Health Access Initiative)
+- Rica Zamora Duchateau (Clinton Health Access Initiative - Laos)
+- Valérian Turbé (Clinton Health Access Initiative - Global)
+- Jessica Floyd (Clinton Health Access Initiative - Global)
+- Hannah Brindle (Clinton Health Access Initiative - Greater Mekong Subregion)
+- Lorenzo Arena (Clinton Health Access Initiative - Laos)
+- Elijah Filip (Clinton Health Access Initiative - Africa)
