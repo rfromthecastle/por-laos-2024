@@ -17,6 +17,7 @@ options(digits=1)                   # Will use until the first decimal
 ### Functions ### ----------------------------------------------------------------
 
 # # Function to download and translate the org units into R
+# Written by Elijah Filip 
 getOrgUnitsByLevel <- function(user, pass, level){
   
   # Create the URL for all org units
@@ -73,6 +74,7 @@ impute_orgunit <- function(level4, level3){
   
   return(list(level4up,level3))
 }
+# End of the code written by Elijah Filip 
 
 
 ### # # Function to merge all the function to create dataset
