@@ -137,7 +137,20 @@ villages <- getOrgUnitsByLevel(
   st_as_sf()
 
 
-#Aggregated data on P.f., P.v., mixed from 2018 onwards aggregated at health facility level as reporting unit
+# #Aggregated data at village level as reporting unit to associate each org unit ID to the right level
+urlvillage <- "https://hmis.gov.la/hmis/api/analytics.csv?dimension=dx%3AMIOL3mDFJZf&dimension=ou%3AOU_GROUP-i25KIs0mtvz%3BLEVEL-lg6NTeX70iX%3BLEVEL-d4UXL51EVXm%3BIWp9dQGM0bS&tableLayout=true&rows=ou&columns=dx&skipRounding=false&completedOnly=false&showHierarchy=true&filter=pe%3A2023"
+level5.test <- GET(
+  urlvillage,
+  authenticate(
+    username,
+    password,
+    type = "basic"
+  ))%>%
+  content(., "text") %>%
+  read_csv() %>%
+  clean_names()
+
+#Aggregated data on P.f., P.v., mixed from 2018 onward aggregated at health facility level as reporting unit
 url.aggr<-"https://hmis.gov.la/hmis/api/analytics.csv?dimension=dx%3AmB9KbAM6KdF%3BxVD0aXeXr5w%3BvBo33ws9HnC%3BZwvHOvOKbuJ&dimension=pe%3A2018%3B2019%3B2020%3B2021%3B2022%3B2023%3B2024&dimension=ou%3AOU_GROUP-i25KIs0mtvz%3BIWp9dQGM0bS&tableLayout=true&rows=ou&columns=dx%3Bpe&skipRounding=false&completedOnly=false&showHierarchy=true"
 
 aggr.cases <- GET(
@@ -151,18 +164,24 @@ aggr.cases <- GET(
   read_csv() %>% 
   clean_names()
 
-# #Aggregated data at village level as reporting unit to associate each org unit ID to the right level
-urlvillage <- "https://hmis.gov.la/hmis/api/analytics.csv?dimension=dx%3AMIOL3mDFJZf&dimension=ou%3AOU_GROUP-i25KIs0mtvz%3BLEVEL-lg6NTeX70iX%3BLEVEL-d4UXL51EVXm%3BIWp9dQGM0bS&tableLayout=true&rows=ou&columns=dx&skipRounding=false&completedOnly=false&showHierarchy=true&filter=pe%3A2023"
-level5.test <- GET(
-  urlvillage,
+#url missing health centers: HC Houaynyoh & HC Sopteung
+url.missshf <- "https://hmis.gov.la/hmis/api/analytics.csv?dimension=dx%3AmB9KbAM6KdF%3BxVD0aXeXr5w%3BvBo33ws9HnC%3BZwvHOvOKbuJ&dimension=pe%3A2018%3B2019%3B2020%3B2021%3B2022%3B2023%3B2024&dimension=ou%3AIWp9dQGM0bS%3BH67ZTmab869%3BKHH9DtTmlj6&tableLayout=true&rows=ou&columns=dx%3Bpe&skipRounding=false&completedOnly=false&showHierarchy=true"
+
+aggr.misshf <- GET(
+  url.missshf,
   authenticate(
     username,
     password,
     type = "basic"
-  ))%>%
-  content(., "text") %>%
-  read_csv() %>%
-  clean_names()
+  ))%>% 
+  content(., "text") %>% 
+  read_csv() %>% 
+  clean_names() %>% 
+  drop_na(orgunitlevel2)  #drop Lao PDR as variable
+
+#Merge into the final dataset
+aggr.cases <- rbind(aggr.cases, aggr.misshf)
+
 
 #Cicc data from 2022,2023, ongoing by Using API to extract from recent DHIS2 server:
 url.cicc <- "https://hmis.gov.la/hmis/api/29/analytics/enrollments/query/yAKTrPUMAuU.csv?dimension=pe:2022;2023;THIS_YEAR&dimension=ou:IWp9dQGM0bS;OU_GROUP-xcrI8OQASVf&dimension=sYIPnUlgN5p&dimension=ICzb0sNZZNQ&dimension=h86ikuTvjuP.qf5LcIDIXSJ&dimension=RhcGAjyYJMH&dimension=ZehVNXWsgbs&dimension=uBtUfbHMjK1&dimension=HnqSqtoERYm&dimension=IVANnvGgSDY&dimension=Tz0gwnPTKsa.ESfDoUGZYUX&dimension=Tz0gwnPTKsa.GNLu0b4Dfk6&dimension=Tz0gwnPTKsa.nOZrreWIzBz&dimension=Tz0gwnPTKsa.yk6kSyuQoKb&dimension=Tz0gwnPTKsa.fKUM5jMBOWZ&dimension=lW4E4Tyu2D9&stage=Tz0gwnPTKsa&displayProperty=NAME&totalPages=false&tableLayout=true&dataIdScheme=NAME&columns=pe;ou;sYIPnUlgN5p;ICzb0sNZZNQ;qf5LcIDIXSJ;RhcGAjyYJMH;ZehVNXWsgbs;uBtUfbHMjK1;HnqSqtoERYm;IVANnvGgSDY;ESfDoUGZYUX;GNLu0b4Dfk6;nOZrreWIzBz;yk6kSyuQoKb;fKUM5jMBOWZ;lW4E4Tyu2D9&rows=pe;ou;sYIPnUlgN5p;ICzb0sNZZNQ;qf5LcIDIXSJ;RhcGAjyYJMH;ZehVNXWsgbs;uBtUfbHMjK1;HnqSqtoERYm;IVANnvGgSDY;ESfDoUGZYUX;GNLu0b4Dfk6;nOZrreWIzBz;yk6kSyuQoKb;fKUM5jMBOWZ;lW4E4Tyu2D9&paging=false"
