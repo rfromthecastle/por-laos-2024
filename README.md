@@ -10,19 +10,19 @@ The following datasets need to be pre-downloaded and prepared for the geographic
 - Shuttle Radar Topography Mission Digital Elevation Model in GeoTIFF format (download from NASA EarthData and stitch together in QGIS)
 
 ## Datasets
-| Variable | Data source | Dataset | Frequency / Currency | Resolution |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
-| Altitude | NASA | [Shuttle Radar Topography Mission](https://www.earthdata.nasa.gov/sensors/srtm) | Latest available (2000) | 1 arcsec (~ 30 m) |
-| Distance to airport | Google | Google Maps | Latest available (2024) | N/A |
-| Distance to international border checkpoints | Google | Google Maps | Latest available (2024) | N/A |
-| Distance to railway stations | Google | Google Maps | Latest available (2024) | N/A |
-| Forest cover | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | Annual for 2021-2023 | 10 m |
-| Malaria cases | Lao Ministry of Health | [Lao Health Management Information System](https://hmis.gov.la/) (DHIS2 line list) | Annual for 2023 | N/A |
-| Permanent water bodies | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | Annual for 2021-2023 | 10 m |
-| Seasonal water bodies | Copernicus Land Monitoring Service | [Water Bodies 2020-present (raster 100 m), global, monthly - version 1](https://land.copernicus.eu/en/products/water-bodies/water-bodies-global-v1-0-100m) | Annual for 2021-2023 | 100 m |
-| Rainfall | Copernicus Climate Data Store | [ERA5 Hourly Data on Pressure Levels](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels) | Monthly for 2021-2023 | 0.1° (= 9 km) |
-| Relative humidity | Copernicus Climate Data Store | [ERA5-Land Hourly Data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land) | Monthly for 2021-2023 | 0.1° (= 9 km) |
-| Temperature | Copernicus Climate Data Store | [ERA5-Land Hourly Data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land) | Monthly for 2021-2023 | 0.1° (= 9 km) |
+| Variable | Data source | Dataset | File format | Frequency / Currency | Resolution |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| Altitude | NASA | [Shuttle Radar Topography Mission](https://www.earthdata.nasa.gov/sensors/srtm) | GeoTIFF | Latest available (2000) | 1 arcsec (~ 30 m) |
+| Distance to airport | Google | Google Maps | Derived from shapefile (points) | Latest available (2024) | N/A |
+| Distance to international border checkpoints | Google | Google Maps | Derived from shapefile (points) | Latest available (2024) | N/A |
+| Distance to railway stations | Google | Google Maps | Derived from shapefile (points) | Latest available (2024) | N/A |
+| Forest cover | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | GeoTIFF | Annual for 2021-2023 | 10 m |
+| Malaria cases | Lao Ministry of Health | [Lao Health Management Information System](https://hmis.gov.la/) (DHIS2 line list) | CSV | Annual for 2023 | N/A |
+| Permanent water bodies | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | GeoTIFF | Annual for 2021-2023 | 10 m |
+| Seasonal water bodies | Copernicus Land Monitoring Service | [Water Bodies 2020-present (raster 100 m), global, monthly - version 1](https://land.copernicus.eu/en/products/water-bodies/water-bodies-global-v1-0-100m) | NetCDF | Annual for 2021-2023 | 100 m |
+| Rainfall | Copernicus Climate Data Store | [ERA5 Hourly Data on Pressure Levels](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels) | NetCDF | Monthly for 2021-2023 | 0.1° (= 9 km) |
+| Relative humidity | Copernicus Climate Data Store | [ERA5-Land Hourly Data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land) | NetCDF | Monthly for 2021-2023 | 0.1° (= 9 km) |
+| Temperature | Copernicus Climate Data Store | [ERA5-Land Hourly Data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land) | NetCDF | Monthly for 2021-2023 | 0.1° (= 9 km) |
 
 ## Authors
 Scripts developed by the Clinton Health Access Initiative:
