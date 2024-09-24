@@ -1,14 +1,5 @@
 # Scripts for the 2024 Laos malaria prevention of re-establishment stratification
 
-## Prerequisites
-The following datasets need to be pre-downloaded and prepared for the geographic extent of Laos.
-
-- Airport locations in shapefile format
-- Health facility catchment areas in shapefile format (download from GeoPrism Registry (http://laogpr.moh.gov.la/#/registry/master-lists?typeCode=HF) and generate Voronoi polygons in QGIS)
-- International border checkpoints in shapefile format
-- Railway stations in shapefile format
-- Shuttle Radar Topography Mission Digital Elevation Model in GeoTIFF format (download from NASA EarthData and stitch together in QGIS)
-
 ## Datasets
 | Variable | Data source | Dataset | File format | Frequency / Currency | Resolution |  Preparation |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -17,6 +8,7 @@ The following datasets need to be pre-downloaded and prepared for the geographic
 | Distance to international border checkpoints | Google | Google Maps | Derived from shapefile (points) | Latest available (2024) | N/A | Digitize point shapefile |
 | Distance to railway stations | Google | Google Maps | Derived from shapefile (points) | Latest available (2024) | N/A | Digitize point shapefile |
 | Forest cover | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | GeoTIFF | Annual for 2021-2023 | 10 m | Run [download_esri_10_m_annual_land_cover.py](https://github.com/rfromthecastle/por-laos-2024/blob/master/Python%20Download%20Scripts/download_esri_10m_annual_land_cover.py) |
+| Health facility catchment area | Lao Ministry of Health | [GeoPrism Registry Health Facility Master List](http://laogpr.moh.gov.la/#/registry/master-lists?typeCode=HF) | Shapefile (polygons) | Latest available (Aug 2024) | N/A | Download health facility master list shapefile and generate Voronoi polygons in GIS software |
 | Malaria cases | Lao Ministry of Health | [Lao Health Management Information System](https://hmis.gov.la/) (DHIS2 line list) | CSV | Annual for 2023 | N/A | Export from DHIS2 |
 | Permanent water bodies | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | GeoTIFF | Annual for 2021-2023 | 10 m | Run [download_esri_10_m_annual_land_cover.py](https://github.com/rfromthecastle/por-laos-2024/blob/master/Python%20Download%20Scripts/download_esri_10m_annual_land_cover.py) |
 | Seasonal water bodies | Copernicus Land Monitoring Service | [Water Bodies 2020-present (raster 100 m), global, monthly - version 1](https://land.copernicus.eu/en/products/water-bodies/water-bodies-global-v1-0-100m) | NetCDF | Annual for 2021-2023 | 100 m | Run [Copernicus_data_download.ipynb](https://github.com/rfromthecastle/por-laos-2024/blob/master/Python%20Download%20Scripts/Copernicus_data_download.ipynb) |
