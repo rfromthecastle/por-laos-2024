@@ -20,7 +20,7 @@ The following datasets need to be pre-downloaded and prepared for the geographic
 | Malaria cases | Lao Ministry of Health | [Lao Health Management Information System](https://hmis.gov.la/) (DHIS2 line list) | Annual for 2023 | N/A |
 | Permanent water bodies | Esri | [Esri 10 m Annual Land Cover (Google Earth Engine)](https://gee-community-catalog.org/projects/S2TSLULC/) | Annual for 2021-2023 | 10 m |
 | Seasonal water bodies | Copernicus Land Monitoring Service | [Water Bodies 2020-present (raster 100 m), global, monthly - version 1](https://land.copernicus.eu/en/products/water-bodies/water-bodies-global-v1-0-100m) | Annual for 2021-2023 | 100 m |
-| Rainfall | Copernicus Climate Data Store | [ERA5 Hourly Data on Pressure Levels](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels) | Monthly for 2021-2023 |  N/A | 0.1° (= 9 km) |
+| Rainfall | Copernicus Climate Data Store | [ERA5 Hourly Data on Pressure Levels](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels) | Monthly for 2021-2023 | 0.1° (= 9 km) |
 | Relative humidity | Copernicus Climate Data Store | [ERA5-Land Hourly Data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land) | Monthly for 2021-2023 | 0.1° (= 9 km) |
 | Temperature | Copernicus Climate Data Store | [ERA5-Land Hourly Data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land) | Monthly for 2021-2023 | 0.1° (= 9 km) |
 
