@@ -28,9 +28,9 @@ The following datasets need to be pre-downloaded and prepared for the geographic
 Scripts developed by the Clinton Health Access Initiative:
 - Hannah Brindle, PhD (Phnom Penh, Cambodia)
 - Jessica Floyd, PhD (London, UK)
-- Lorenzo Arena (Vientiane, Laos)
-- Rica Zamora Duchateau (Vientiane, Laos)
-- Valérian Turbé, PhD (London, UK)
+- Lorenzo Arena ([@lorearena](https://github.com/lorearena)) (Vientiane, Laos)
+- Rica Zamora Duchateau ([@rfromthecastle](https://github.com/rfromthecastle)) (Vientiane, Laos)
+- Valérian Turbé, PhD ([@Valerian8](https://github.com/Valerian8)) (London, UK)
 
 Includes code from:
 - ChatGPT
