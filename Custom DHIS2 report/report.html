@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Malaria POR maps</title>
+		<meta charset="utf-8">
+	    <!-- Bootstrap CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+		<script src="https://code.highcharts.com/modules/exporting.js"></script>
+		<script src="https://code.highcharts.com/modules/export-data.js"></script>
+		<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+		<script src="https://code.highcharts.com/maps/highmaps.js"></script>
+		<script src="https://code.highcharts.com/maps/modules/map.js"></script>
+		<script src="https://code.highcharts.com/maps/modules/data.js"></script>	
+		<script src="https://code.highcharts.com/maps/modules/drilldown.js"></script>
+		<script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+		<script src="https://code.highcharts.com/maps/modules/series-on-point.js"></script>
+
+		<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+		<script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+		<script src="https://cdn.datatables.net/fixedcolumns/5.0.0/js/dataTables.fixedColumns.js"></script>
+		<script src="https://cdn.datatables.net/fixedcolumns/5.0.0/js/fixedColumns.dataTables.js"></script>
+
+		<script src="https://cdn.datatables.net/buttons/3.0.0/js/dataTables.buttons.js"></script>
+		<script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.dataTables.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+		<script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.html5.min.js"></script>
+		<script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+
+		<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.0/css/fixedColumns.dataTables.css">
+		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.0/css/buttons.dataTables.css">
+		<script src="https://rs.ci-pilot.asia/POR_2024.js"></script>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+		<script src="https://unpkg.com/d3-delaunay@6.0.2/dist/d3-delaunay.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+		<script src="https://code.highcharts.com/mapdata/countries/la/la-all.js"></script>
+		<script src="https://rs.ci-pilot.asia/POR_data/data.json"></script>
+		<script src="https://rs.ci-pilot.asia/POR_data/map_data.json"></script>
+	    <style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f4f5f7; /* DHIS2 light gray background */
+			}
+
+			.sidebar {
+				height: 100vh;
+				background-color: #2c6693; /* DHIS2 sidebar blue */
+				color: white;
+				padding: 20px;
+				overflow-y: auto;
+			}
+
+			.sidebar h4 {
+				margin-bottom: 1rem;
+				font-size: 1.2rem;
+				font-weight: bold;
+			}
+
+			.form-check-label {
+				font-size: 1rem;
+			}
+
+			.form-check-input {
+				accent-color: #1e88e5; /* DHIS2 blue for radio buttons */
+			}
+
+			.content {
+				padding: 20px;
+			}
+			
+			/* Horizontal Scrollable Maps Container */
+			.container{
+				width:100% !important;
+			}
+			#container {
+				display: flex; /* Align maps horizontally */
+				gap: 20px; /* Add space between maps */
+				overflow-x: auto; /* Enable horizontal scrolling */
+				white-space: nowrap; /* Prevent maps from wrapping to the next line */
+				padding: 10px;
+				border: 1px solid #ccc;
+				background-color: #ffffff;
+				border-radius: 5px;
+				height: 1150px; /* Fixed height for the scroll container */
+			}
+
+			.map-container, .table-container {
+				display: none; /* Hidden by default */
+			}
+
+			.map-container.active, .table-container.active {
+				display: block; /* Show active map or table */
+			}
+
+			footer {
+				background-color: #2c6693; /* DHIS2 footer blue */
+				color: white;
+				text-align: center;
+				padding: 10px;
+				margin-top: 20px;
+			}
+
+			/* Map and Table Container Styling */
+			.map-container, .table-container {
+				background: white;
+				border: 1px solid #e0e0e0; /* Light gray border */
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				border-radius: 5px;
+				padding: 20px;
+			}
+
+			/* Table Styling */
+			table {
+				background: white;
+				border-collapse: collapse;
+			}
+
+			th {
+				background-color: #1e88e5; /* DHIS2 blue for headers */
+				color: white;
+				text-align: center;
+			}
+
+			td, th {
+				border: 1px solid #e0e0e0;
+				padding: 8px;
+			}
+
+			tr:nth-child(even) {
+				background-color: #f9f9f9;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<!-- Sidebar -->
+				<div class="col-md-3 sidebar">
+					<h4>Select View</h4>
+					<form id="menu">
+					</form>
+				</div>
+
+				<!-- Main Content -->
+				<div class="col-md-9 content">
+					<div id="container">
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Bootstrap JS -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>

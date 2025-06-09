@@ -6,6 +6,9 @@
 # and store in C:\Users\<YourUsername>
 #
 # Your API token can be obtained from your account on the Copernicus Climate Change Service website
+# 1. Run download_era5_temp.py to download the data
+# 2. Run convert_to_csv.py to convert the downloaded NetCDF file to CSV
+# 3. Run aggregate_to_district.py to aggregate the data by district and save to CSV
 
 import os
 import subprocess
@@ -120,11 +123,16 @@ def aggregate_to_district(input_file, map_geojson, output_file=None):
     gdf_districts = gpd.read_file(map_geojson)
     print(f"Total features in map: {len(gdf_districts)}")
 
-    if 'level' in gdf_districts.columns:
-        gdf_districts = gdf_districts[gdf_districts['level'] == '3']
-        print(f"Filtered to level 3 districts: {len(gdf_districts)}")
-    else:
-        print("Column 'level' not found. Using all features.")
+    # Lọc các quận có mã code bắt đầu bằng 'ASILAO'
+    gdf_districts = gdf_districts[
+        gdf_districts['code'].astype(str).str.startswith("ASILAO", na=False)
+    ]
+    # ✅ Remove features with invalid or missing geometry
+    gdf_districts = gdf_districts[
+        gdf_districts.geometry.notnull() &
+        gdf_districts.is_valid &
+        ~gdf_districts.is_empty
+    ]
 
     gdf_districts = gdf_districts.to_crs("EPSG:4326")
 
@@ -215,6 +223,7 @@ def aggregate_to_district(input_file, map_geojson, output_file=None):
         districts_temp_filtered[export_columns].to_csv(csv_output, index=False)
     else:
         print("No districts match code filter 'ASILAO'. No CSV file exported.")
+
 
 # Set file paths
 download_file = "D:/ERA5/laos_temperature_2021_2023.nc"
